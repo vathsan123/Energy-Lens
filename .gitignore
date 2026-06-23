@@ -1,0 +1,43 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment/secrets
+.env
+*.pem
+vapid_private_key.pem
+
+# Database/local files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Flask instance
+instance/
+
+# Generated reports/uploads
+uploads/
+reports/
+
+# Optional large model/data files
+# Uncomment if you do not want to upload model/data
+# *.joblib
+# *.pkl
+# *.csv

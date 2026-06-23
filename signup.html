@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Sign Up | TNEB Smart</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/styles.css?v=signup2" />
+</head>
+
+<body class="uv-login-body theme-light">
+  <main class="uv-login-shell">
+    <section class="uv-login-card">
+      <div class="uv-orb uv-orb-one"></div>
+      <div class="uv-orb uv-orb-two"></div>
+
+      <div class="uv-login-brand">
+        <div class="uv-login-logo">⚡</div>
+
+        <div>
+          <div class="uv-login-brand-title">TNEB Smart</div>
+          <div class="uv-login-brand-subtitle">Energy Intelligence Platform</div>
+        </div>
+      </div>
+
+      <div class="uv-login-copy">
+        <div class="uv-login-kicker">
+          Create your household energy account
+        </div>
+
+        <h1>Start tracking your electricity usage intelligently.</h1>
+
+        <p>
+          Create an account, add your household, and begin storing daily readings,
+          appliance usage, forecasts, alerts and recommendations securely.
+        </p>
+      </div>
+
+      <div class="uv-login-stats">
+        <div class="uv-stat-card">
+          <span>Private</span>
+          <b>Your Data</b>
+        </div>
+
+        <div class="uv-stat-card">
+          <span>Household</span>
+          <b>Separated</b>
+        </div>
+
+        <div class="uv-stat-card">
+          <span>Storage</span>
+          <b>PostgreSQL</b>
+        </div>
+      </div>
+    </section>
+
+    <section class="uv-login-panel">
+      <div class="uv-panel-inner">
+        <div class="uv-panel-header">
+          <div class="uv-panel-icon">＋</div>
+
+          <h2>Create account</h2>
+
+          <p>
+            Register your household and start saving readings automatically.
+          </p>
+        </div>
+
+        {% if error %}
+        <div class="uv-login-error">
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="uv-login-form">
+          <div class="uv-field">
+            <input
+              type="text"
+              name="full_name"
+              id="full_name"
+              placeholder=" "
+              required
+            />
+            <label for="full_name">Full name</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder=" "
+              required
+            />
+            <label for="email">Email address</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="text"
+              name="phone"
+              id="phone"
+              placeholder=" "
+            />
+            <label for="phone">Phone number</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder=" "
+              required
+            />
+            <label for="password">Password</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="text"
+              name="household_name"
+              id="household_name"
+              placeholder=" "
+              value="My Home"
+            />
+            <label for="household_name">Household name</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="text"
+              name="city"
+              id="city"
+              placeholder=" "
+            />
+            <label for="city">City</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="text"
+              name="district"
+              id="district"
+              placeholder=" "
+            />
+            <label for="district">District</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="text"
+              name="eb_service_number"
+              id="eb_service_number"
+              placeholder=" "
+            />
+            <label for="eb_service_number">EB service number</label>
+          </div>
+
+          <div class="uv-field">
+            <input
+              type="date"
+              name="billing_cycle_start_date"
+              id="billing_cycle_start_date"
+              placeholder=" "
+            />
+            <label for="billing_cycle_start_date">Billing cycle start date</label>
+          </div>
+
+          <button type="submit" class="uv-login-submit">
+            <span>Create account</span>
+            <strong>→</strong>
+          </button>
+        </form>
+
+        <p class="uv-login-note">
+          Already have an account?
+          <a href="/login" class="uv-auth-link">Sign in</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
