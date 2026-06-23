@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Login | TNEB Smart</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/styles.css?v=login-theme-final-1" />
+</head>
+
+<body class="uv-login-body theme-light">
+  <button id="loginThemeToggle" class="login-theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+    <span id="loginThemeIcon">🌙</span>
+  </button>
+
+  <main class="uv-login-shell">
+    <section class="uv-login-card">
+      <div class="uv-orb uv-orb-one"></div>
+      <div class="uv-orb uv-orb-two"></div>
+
+      <div class="uv-login-brand">
+        <div class="uv-login-logo">
+          ⚡
+        </div>
+
+        <div>
+          <div class="uv-login-brand-title">TNEB Smart</div>
+          <div class="uv-login-brand-subtitle">Energy Intelligence Platform</div>
+        </div>
+      </div>
+
+      <div class="uv-login-copy">
+        <div class="uv-login-kicker">
+          Tamil Nadu electricity forecasting
+        </div>
+
+        <h1>Welcome back to your energy command center.</h1>
+
+        <p>
+          Forecast usage, understand appliance behavior, avoid high-cost slabs,
+          and monitor your Tamil Nadu electricity bill with clarity.
+        </p>
+      </div>
+
+      <div class="uv-login-stats">
+        <div class="uv-stat-card">
+          <span>Cycle View</span>
+          <b>60 Days</b>
+        </div>
+
+        <div class="uv-stat-card">
+          <span>Forecast</span>
+          <b>AI Model</b>
+        </div>
+
+        <div class="uv-stat-card">
+          <span>Alerts</span>
+          <b>Slab Aware</b>
+        </div>
+      </div>
+    </section>
+
+    <section class="uv-login-panel">
+      <div class="uv-panel-inner">
+        <div class="uv-panel-header">
+          <div class="uv-panel-icon">
+            ◈
+          </div>
+
+          <h2>Sign in</h2>
+
+          <p>
+            Access your electricity dashboard, bill forecast, and appliance insights.
+          </p>
+        </div>
+
+        {% if error %}
+        <div class="uv-login-error">
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="uv-login-form">
+          <div class="uv-field">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value="{{ email_value }}"
+              placeholder=" "
+              autocomplete="email"
+              required
+            />
+            <label for="email">Email address</label>
+          </div>
+
+          <div class="uv-field uv-password-field">
+            <input
+              type="password"
+              name="password"
+              id="loginPassword"
+              placeholder=" "
+              autocomplete="current-password"
+              required
+            />
+            <label for="loginPassword">Password</label>
+
+            <button type="button" id="togglePassword" class="uv-password-toggle" aria-label="Show password">
+              👁️
+            </button>
+          </div>
+
+          <button type="submit" class="uv-login-submit">
+            <span>Enter dashboard</span>
+            <strong>→</strong>
+          </button>
+        </form>
+
+        <p class="uv-login-note">
+          This is a local demo login. For production, connect this to a secure database with hashed passwords.
+        </p>
+
+        <p class="uv-login-note">
+  New here?
+  <a href="/signup" class="uv-auth-link">Create an account</a>
+</p>
+
+<div class="uv-auth-actions">
+  <a href="/signup" class="uv-auth-primary">Create new account</a>
+  <a href="/forgot-password" class="uv-auth-secondary">Forgot password?</a>
+</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Password show / hide
+    const toggle = document.getElementById("togglePassword");
+    const password = document.getElementById("loginPassword");
+
+    if (toggle && password) {
+      toggle.addEventListener("click", () => {
+        const hidden = password.type === "password";
+        password.type = hidden ? "text" : "password";
+        toggle.textContent = hidden ? "🙈" : "👁️";
+      });
+    }
+
+    // Login page light/dark toggle
+    function applyLoginTheme(theme) {
+      document.body.classList.remove("theme-light", "theme-dark");
+
+      if (theme === "dark") {
+        document.body.classList.add("theme-dark");
+      } else {
+        document.body.classList.add("theme-light");
+      }
+
+      localStorage.setItem("tneb-theme", theme);
+
+      const icon = document.getElementById("loginThemeIcon");
+      if (icon) {
+        icon.textContent = theme === "dark" ? "☀️" : "🌙";
+      }
+    }
+
+    const savedTheme = localStorage.getItem("tneb-theme") || "light";
+    applyLoginTheme(savedTheme);
+
+    const loginThemeToggle = document.getElementById("loginThemeToggle");
+
+    if (loginThemeToggle) {
+      loginThemeToggle.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("theme-dark");
+        applyLoginTheme(isDark ? "light" : "dark");
+      });
+    }
+  </script>
+</body>
+</html>

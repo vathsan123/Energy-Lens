@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Center - Energy Lens</title>
+
+    <style>
+        :root,
+        body.theme-light {
+            --bg: #FAFAFA;
+            --surface: #FDFBF7;
+            --surface-solid: #FFFFFF;
+            --surface-2: #F6F1EA;
+            --text: #1E293B;
+            --heading: #1E1B18;
+            --muted: #6F675E;
+            --border: #E5E0DA;
+            --solar-gold: #FFB300;
+            --solar-gold-2: #FFC107;
+            --emerald: #00C853;
+            --alert-orange: #FF3D00;
+            --shadow: 0 22px 60px rgba(82, 61, 20, 0.12);
+            --shadow-strong: 0 34px 90px rgba(82, 61, 20, 0.22);
+            --radius: 24px;
+        }
+
+        body.theme-dark {
+            --bg: #0D0C0A;
+            --surface: #1A1815;
+            --surface-solid: #211E1A;
+            --surface-2: #25211D;
+            --text: #F5F4F0;
+            --heading: #FFFFFF;
+            --muted: #C7BFB5;
+            --border: #332E28;
+            --solar-gold: #FFC107;
+            --solar-gold-2: #FFB300;
+            --emerald: #00E676;
+            --alert-orange: #FF3D00;
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+            --shadow-strong: 0 34px 90px rgba(0, 0, 0, 0.55);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 8% 10%, rgba(255, 179, 0, 0.16), transparent 28%),
+                radial-gradient(circle at 92% 12%, rgba(0, 200, 83, 0.10), transparent 30%),
+                radial-gradient(circle at 58% 94%, rgba(255, 145, 0, 0.08), transparent 35%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            min-height: 100vh;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 24px 18px;
+            color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            background:
+                radial-gradient(circle at top left, rgba(255, 179, 0, 0.22), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(0, 200, 83, 0.10), transparent 34%),
+                linear-gradient(180deg, #1A1613 0%, #2A2118 50%, #120F0C 100%);
+            border-right: 1px solid rgba(255, 193, 7, 0.18);
+            box-shadow: 18px 0 60px rgba(26, 22, 19, 0.32);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 8px 28px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            font-size: 24px;
+            color: #1A1613;
+            background:
+                radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.95), transparent 16%),
+                linear-gradient(135deg, #FFC107 0%, #FFB300 58%, #00C853 100%);
+            box-shadow:
+                0 0 26px rgba(255, 193, 7, 0.55),
+                0 18px 42px rgba(255, 145, 0, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+        }
+
+        .brand-title {
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 19px;
+            letter-spacing: -0.04em;
+        }
+
+        .brand-subtitle {
+            color: #FFE8A3;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .nav-item {
+            width: 100%;
+            border: 0;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: #E8DCCB;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.22s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            background: rgba(255, 179, 0, 0.12);
+        }
+
+        .nav-item.active {
+            color: #1A1613;
+            background: linear-gradient(135deg, #FFC107 0%, #FFB300 65%, #FFE082 100%);
+            box-shadow:
+                0 16px 42px rgba(255, 179, 0, 0.36),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+        }
+
+        .side-card {
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 193, 7, 0.18);
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 14px;
+        }
+
+        .side-label {
+            color: #FFD166;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .side-value {
+            color: #F5EAD7;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .side-footer {
+            margin-top: auto;
+            color: #F5EAD7;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 10px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 34px);
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, var(--heading) 0%, #7A4B00 48%, #FFB300 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .topbar p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hamburger {
+            display: none;
+            border: 0;
+            background: var(--surface);
+            color: var(--heading);
+            border-radius: 14px;
+            padding: 10px 12px;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn,
+        .primary-btn,
+        .ghost-btn {
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--heading);
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            transition: 0.2s ease;
+        }
+
+        .primary-btn,
+        .ghost-btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 11px 14px;
+            font-weight: 900;
+            transition: 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #FFC107 0%, #FFB300 65%, #FF9100 100%);
+            color: #1A1613;
+            box-shadow:
+                0 16px 38px rgba(255, 179, 0, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+        }
+
+        .ghost-btn {
+            background: rgba(255, 179, 0, 0.12);
+            color: var(--heading);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .primary-btn:hover,
+        .ghost-btn:hover,
+        .theme-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .hero-card,
+        .panel,
+        .stat-card,
+        .alert-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            color: var(--text);
+        }
+
+        .hero-card {
+            padding: 28px;
+            margin-bottom: 18px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 179, 0, 0.15), transparent 35%),
+                radial-gradient(circle at bottom left, rgba(0, 200, 83, 0.08), transparent 32%),
+                var(--surface);
+        }
+
+        .hero-kicker {
+            color: #B07600;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 12px;
+        }
+
+        .hero-card h2 {
+            font-size: clamp(28px, 5vw, 44px);
+            max-width: 780px;
+            line-height: 1.03;
+            margin: 10px 0;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, var(--heading) 0%, #7A4B00 48%, #FFB300 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-card p,
+        .panel p {
+            color: var(--muted);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            padding: 18px;
+        }
+
+        .stat-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card b {
+            display: block;
+            margin-top: 7px;
+            color: var(--heading);
+            font-size: 24px;
+        }
+
+        .panel {
+            padding: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -0.02em;
+            color: var(--heading);
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-btn {
+            border: 1px solid var(--border);
+            background: var(--surface-solid);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #FFC107, #FFB300);
+            color: #1A1613;
+            border-color: transparent;
+        }
+
+        .alert-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .alert-card {
+            padding: 16px;
+            display: grid;
+            gap: 8px;
+            opacity: 1;
+        }
+
+        .alert-card.read {
+            opacity: 0.68;
+        }
+
+        .alert-card-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .alert-title {
+            margin: 0;
+            font-size: 16px;
+            color: var(--heading);
+        }
+
+        .alert-message {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .alert-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .pill {
+            border-radius: 999px;
+            padding: 5px 8px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+        }
+
+        .pill.critical {
+            color: var(--alert-orange);
+            background: rgba(255, 61, 0, 0.12);
+            border-color: rgba(255, 61, 0, 0.28);
+        }
+
+        .pill.warning {
+            color: #FF9100;
+            background: rgba(255, 145, 0, 0.12);
+            border-color: rgba(255, 145, 0, 0.28);
+        }
+
+        .pill.info {
+            color: var(--emerald);
+            background: rgba(0, 200, 83, 0.12);
+            border-color: rgba(0, 200, 83, 0.28);
+        }
+
+        .empty-state {
+            padding: 18px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        @media (max-width: 1100px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -310px;
+                transition: 0.25s ease;
+                width: 290px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 14px;
+            }
+
+            .topbar,
+            .panel-header,
+            .alert-card-top {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* =====================================================
+   CUSTOM SOLAR CURSOR - GLOBAL
+   ===================================================== */
+
+.solar-cursor-dot,
+.solar-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 999999;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+}
+
+.solar-cursor-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--solar-gold, #FFB300);
+    box-shadow:
+        0 0 12px rgba(255, 193, 7, 0.95),
+        0 0 28px rgba(255, 145, 0, 0.50);
+}
+
+.solar-cursor-ring {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 179, 0, 0.55);
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.22);
+}
+
+body.solar-cursor-enabled,
+body.solar-cursor-enabled button,
+body.solar-cursor-enabled input,
+body.solar-cursor-enabled select,
+body.solar-cursor-enabled textarea,
+body.solar-cursor-enabled a,
+body.solar-cursor-enabled .nav-item,
+body.solar-cursor-enabled .primary-btn,
+body.solar-cursor-enabled .ghost-btn,
+body.solar-cursor-enabled .logout-btn,
+body.solar-cursor-enabled .profile-link-btn,
+body.solar-cursor-enabled .filter-btn {
+    cursor: none;
+}
+
+body.solar-cursor-visible .solar-cursor-dot,
+body.solar-cursor-visible .solar-cursor-ring {
+    opacity: 1;
+}
+
+body.solar-cursor-hover .solar-cursor-dot {
+    opacity: 0.28;
+}
+
+body.solar-cursor-hover .solar-cursor-ring {
+    border-color: var(--solar-gold, #FFB300);
+    background: rgba(255, 179, 0, 0.08);
+    box-shadow:
+        0 0 14px rgba(255, 179, 0, 0.36),
+        0 0 34px rgba(255, 193, 7, 0.18);
+}
+
+body.solar-cursor-active .solar-cursor-ring {
+    border-color: var(--alert-orange, #FF3D00);
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    body.solar-cursor-enabled,
+    body.solar-cursor-enabled * {
+        cursor: auto !important;
+    }
+
+    .solar-cursor-dot,
+    .solar-cursor-ring {
+        display: none !important;
+    }
+}
+    </style>
+</head>
+
+<body class="theme-light">
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon">⚡</div>
+            <div>
+                <div class="brand-title">Energy Lens</div>
+                <div class="brand-subtitle">Notification Center</div>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a class="nav-item" href="{{ url_for('index') }}">
+                <span>🏠 Dashboard</span>
+            </a>
+
+            <a class="nav-item active" href="{{ url_for('alerts_page') }}">
+                <span>🔔 Alerts</span>
+            </a>
+
+            <a class="nav-item" href="{{ url_for('profile') }}">
+                <span>👤 Profile</span>
+            </a>
+
+            <a class="nav-item" href="{{ url_for('logout') }}">
+                <span>🚪 Logout</span>
+            </a>
+        </nav>
+
+        <div class="side-card">
+            <div class="side-label">Logged in as</div>
+            <div class="side-value">{{ current_user.email }}</div>
+        </div>
+
+        <div class="side-card">
+            <div class="side-label">Purpose</div>
+            <div class="side-value">Review alert history, unread warnings and critical bill-risk notifications.</div>
+        </div>
+
+        <div class="side-footer">
+            Alerts are saved even if push/WhatsApp notifications are missed.
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Notification Center</h1>
+                <p>Track all consumption, bill-risk and abnormal usage alerts in one place.</p>
+            </div>
+
+            <div class="top-actions">
+                <button class="hamburger" id="hamburger" type="button">☰</button>
+
+                <button class="theme-toggle-btn" id="themeToggle" type="button">
+                    <span id="themeToggleIcon">🌙</span>
+                </button>
+
+                <a class="ghost-btn" href="{{ url_for('index') }}">Dashboard</a>
+                <button class="primary-btn" id="markAllReadBtn" type="button">Mark all read</button>
+            </div>
+        </div>
+
+        <section class="hero-card">
+            <div class="hero-kicker">Smart Alert History</div>
+            <h2>Know exactly why you were notified.</h2>
+            <p>
+                Review limit warnings, abnormal consumption notices, high-bill risks,
+                read/unread status and alert timeline.
+            </p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span>Total Alerts</span>
+                <b id="statTotal">--</b>
+            </div>
+
+            <div class="stat-card">
+                <span>Unread</span>
+                <b id="statUnread">--</b>
+            </div>
+
+            <div class="stat-card">
+                <span>Critical</span>
+                <b id="statCritical">--</b>
+            </div>
+
+            <div class="stat-card">
+                <span>Warnings</span>
+                <b id="statWarning">--</b>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Alert History</h3>
+                    <p>Filter by severity or read status.</p>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="unread">Unread</button>
+                <button class="filter-btn" data-filter="critical">Critical</button>
+                <button class="filter-btn" data-filter="warning">Warning</button>
+                <button class="filter-btn" data-filter="info">Info</button>
+            </div>
+
+            <div id="alertsList" class="alert-list">
+                <div class="empty-state">Loading alerts...</div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+(function () {
+    const state = {
+        alerts: [],
+        filter: "all"
+    };
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+    function severityColor(severity) {
+        if (severity === "critical") return "critical";
+        if (severity === "warning") return "warning";
+        return "info";
+    }
+
+    function applyTheme(theme) {
+        document.body.classList.remove("theme-light", "theme-dark");
+        document.body.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
+        localStorage.setItem("tneb-theme", theme);
+
+        const icon = $("themeToggleIcon");
+        if (icon) {
+            icon.textContent = theme === "dark" ? "☀️" : "🌙";
+        }
+    }
+
+    function filteredAlerts() {
+        if (state.filter === "all") return state.alerts;
+        if (state.filter === "unread") return state.alerts.filter(a => !a.isRead);
+        return state.alerts.filter(a => (a.severity || "info") === state.filter);
+    }
+
+    function renderStats() {
+        const total = state.alerts.length;
+        const unread = state.alerts.filter(a => !a.isRead).length;
+        const critical = state.alerts.filter(a => a.severity === "critical").length;
+        const warning = state.alerts.filter(a => a.severity === "warning").length;
+
+        $("statTotal").textContent = total;
+        $("statUnread").textContent = unread;
+        $("statCritical").textContent = critical;
+        $("statWarning").textContent = warning;
+    }
+
+    function renderAlerts() {
+        const list = $("alertsList");
+        const alerts = filteredAlerts();
+
+        renderStats();
+
+        if (!alerts.length) {
+            list.innerHTML = `<div class="empty-state">No alerts found for this filter.</div>`;
+            return;
+        }
+
+        list.innerHTML = "";
+
+        alerts.forEach(alert => {
+            const card = document.createElement("div");
+            card.className = `alert-card ${alert.isRead ? "read" : ""}`;
+
+            const severity = alert.severity || "info";
+
+            card.innerHTML = `
+                <div class="alert-card-top">
+                    <div>
+                        <h4 class="alert-title">${alert.title || "Alert"}</h4>
+                        <p class="alert-message">${alert.message || ""}</p>
+                    </div>
+
+                    ${
+                        alert.isRead
+                            ? `<span class="pill">Read</span>`
+                            : `<button class="primary-btn" data-alert-id="${alert.id}" type="button">Mark read</button>`
+                    }
+                </div>
+
+                <div class="alert-meta">
+                    <span class="pill ${severityColor(severity)}">${severity}</span>
+                    <span class="pill">${alert.alertType || "general"}</span>
+                    <span class="pill">Alert date: ${alert.alertDate || "--"}</span>
+                    <span class="pill">Reading date: ${alert.readingDate || "--"}</span>
+                </div>
+            `;
+
+            list.appendChild(card);
+        });
+
+        list.querySelectorAll("[data-alert-id]").forEach(button => {
+            button.addEventListener("click", async () => {
+                await markAlertRead(button.getAttribute("data-alert-id"));
+            });
+        });
+    }
+
+    async function loadAlerts() {
+        const response = await fetch("/api/alerts");
+
+        if (!response.ok) {
+            $("alertsList").innerHTML = `<div class="empty-state">Could not load alerts.</div>`;
+            return;
+        }
+
+        const data = await response.json();
+        state.alerts = data.alerts || [];
+        renderAlerts();
+    }
+
+    async function markAlertRead(id) {
+        if (!id) return;
+
+        const response = await fetch(`/api/alerts/${id}/read`, {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        await loadAlerts();
+    }
+
+    async function markAllRead() {
+        const response = await fetch("/api/alerts/read-all", {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        await loadAlerts();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        applyTheme(localStorage.getItem("tneb-theme") || "light");
+
+        if ($("themeToggle")) {
+            $("themeToggle").addEventListener("click", () => {
+                applyTheme(document.body.classList.contains("theme-dark") ? "light" : "dark");
+            });
+        }
+
+        if ($("hamburger") && $("sidebar")) {
+            $("hamburger").addEventListener("click", () => {
+                $("sidebar").classList.toggle("open");
+            });
+        }
+
+        if ($("markAllReadBtn")) {
+            $("markAllReadBtn").addEventListener("click", markAllRead);
+        }
+
+        document.querySelectorAll(".filter-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                button.classList.add("active");
+                state.filter = button.dataset.filter;
+                renderAlerts();
+            });
+        });
+
+        loadAlerts().catch(console.error);
+    });
+})();
+</script>
+<script src="{{ url_for('static', filename='js/solar_cursor.js') }}"></script>
+<style>
+    /* FORCE SOLAR CURSOR */
+    .solar-cursor-dot,
+    .solar-cursor-ring {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 999999999;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .solar-cursor-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--solar-gold, #FFB300);
+        box-shadow:
+            0 0 12px rgba(255, 193, 7, 0.95),
+            0 0 28px rgba(255, 145, 0, 0.50);
+    }
+
+    .solar-cursor-ring {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(255, 179, 0, 0.65);
+        box-shadow: 0 0 20px rgba(255, 179, 0, 0.25);
+    }
+
+    body.solar-cursor-enabled,
+    body.solar-cursor-enabled * {
+        cursor: none !important;
+    }
+
+    body.solar-cursor-visible .solar-cursor-dot,
+    body.solar-cursor-visible .solar-cursor-ring {
+        opacity: 1;
+    }
+
+    body.solar-cursor-hover .solar-cursor-dot {
+        opacity: 0.25;
+    }
+
+    body.solar-cursor-hover .solar-cursor-ring {
+        border-color: var(--solar-gold, #FFB300);
+        background: rgba(255, 179, 0, 0.08);
+        box-shadow:
+            0 0 14px rgba(255, 179, 0, 0.36),
+            0 0 34px rgba(255, 193, 7, 0.18);
+    }
+
+    body.solar-cursor-active .solar-cursor-ring {
+        border-color: var(--alert-orange, #FF3D00);
+    }
+
+    @media (pointer: coarse) {
+        body.solar-cursor-enabled,
+        body.solar-cursor-enabled * {
+            cursor: auto !important;
+        }
+
+        .solar-cursor-dot,
+        .solar-cursor-ring {
+            display: none !important;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    function setupForcedSolarCursor() {
+        if (window.matchMedia("(pointer: coarse)").matches) {
+            return;
+        }
+
+        document.querySelectorAll(".solar-cursor-dot, .solar-cursor-ring").forEach(function (el) {
+            el.remove();
+        });
+
+        const dot = document.createElement("div");
+        const ring = document.createElement("div");
+
+        dot.className = "solar-cursor-dot";
+        ring.className = "solar-cursor-ring";
+
+        document.body.appendChild(ring);
+        document.body.appendChild(dot);
+
+        document.body.classList.add("solar-cursor-enabled");
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX;
+        let ringY = mouseY;
+        let ringScale = 1;
+        let targetScale = 1;
+
+        const interactiveSelector = [
+            "a",
+            "button",
+            "input",
+            "select",
+            "textarea",
+            "[role='button']",
+            ".nav-item",
+            ".primary-btn",
+            ".ghost-btn",
+            ".logout-btn",
+            ".profile-link-btn",
+            ".filter-btn",
+            ".panel",
+            ".hero-card",
+            ".quick-card",
+            ".theme-toggle-btn"
+        ].join(",");
+
+        function moveDot(x, y) {
+            dot.style.transform =
+                "translate3d(" + x + "px, " + y + "px, 0) translate(-50%, -50%)";
+        }
+
+        function moveRing(x, y, scale) {
+            ring.style.transform =
+                "translate3d(" + x + "px, " + y + "px, 0) translate(-50%, -50%) scale(" + scale + ")";
+        }
+
+        window.addEventListener("mousemove", function (event) {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+
+            document.body.classList.add("solar-cursor-visible");
+
+            moveDot(mouseX, mouseY);
+        });
+
+        window.addEventListener("mouseenter", function () {
+            document.body.classList.add("solar-cursor-visible");
+        });
+
+        window.addEventListener("mouseleave", function () {
+            document.body.classList.remove("solar-cursor-visible");
+        });
+
+        document.addEventListener("mouseover", function (event) {
+            if (event.target.closest(interactiveSelector)) {
+                document.body.classList.add("solar-cursor-hover");
+                targetScale = 1.5;
+            }
+        });
+
+        document.addEventListener("mouseout", function (event) {
+            if (event.target.closest(interactiveSelector)) {
+                document.body.classList.remove("solar-cursor-hover");
+                targetScale = 1;
+            }
+        });
+
+        window.addEventListener("mousedown", function () {
+            document.body.classList.add("solar-cursor-active");
+            targetScale = 0.65;
+        });
+
+        window.addEventListener("mouseup", function () {
+            document.body.classList.remove("solar-cursor-active");
+
+            if (document.body.classList.contains("solar-cursor-hover")) {
+                targetScale = 1.5;
+            } else {
+                targetScale = 1;
+            }
+        });
+
+        function animate() {
+            ringX += (mouseX - ringX) * 0.22;
+            ringY += (mouseY - ringY) * 0.22;
+            ringScale += (targetScale - ringScale) * 0.22;
+
+            moveRing(ringX, ringY, ringScale);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupForcedSolarCursor);
+    } else {
+        setupForcedSolarCursor();
+    }
+})();
+</script>
+</body>
+</html>

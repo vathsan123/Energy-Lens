@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Energy Lens</title>
+
+    <style>
+        :root,
+        body.theme-light {
+            --bg: #FAFAFA;
+            --surface: #FDFBF7;
+            --surface-solid: #FFFFFF;
+            --surface-2: #F6F1EA;
+            --text: #1E293B;
+            --heading: #1E1B18;
+            --muted: #6F675E;
+            --border: #E5E0DA;
+            --solar-gold: #FFB300;
+            --solar-gold-2: #FFC107;
+            --emerald: #00C853;
+            --alert-orange: #FF3D00;
+            --shadow: 0 22px 60px rgba(82, 61, 20, 0.12);
+            --shadow-strong: 0 34px 90px rgba(82, 61, 20, 0.22);
+            --radius: 24px;
+        }
+
+        body.theme-dark {
+            --bg: #0D0C0A;
+            --surface: #1A1815;
+            --surface-solid: #211E1A;
+            --surface-2: #25211D;
+            --text: #F5F4F0;
+            --heading: #FFFFFF;
+            --muted: #C7BFB5;
+            --border: #332E28;
+            --solar-gold: #FFC107;
+            --solar-gold-2: #FFB300;
+            --emerald: #00E676;
+            --alert-orange: #FF3D00;
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+            --shadow-strong: 0 34px 90px rgba(0, 0, 0, 0.55);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 8% 10%, rgba(255, 179, 0, 0.16), transparent 28%),
+                radial-gradient(circle at 92% 12%, rgba(0, 200, 83, 0.10), transparent 30%),
+                radial-gradient(circle at 58% 94%, rgba(255, 145, 0, 0.08), transparent 35%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            min-height: 100vh;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 24px 18px;
+            color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            background:
+                radial-gradient(circle at top left, rgba(255, 179, 0, 0.22), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(0, 200, 83, 0.10), transparent 34%),
+                linear-gradient(180deg, #1A1613 0%, #2A2118 50%, #120F0C 100%);
+            border-right: 1px solid rgba(255, 193, 7, 0.18);
+            box-shadow: 18px 0 60px rgba(26, 22, 19, 0.32);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 8px 28px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            font-size: 24px;
+            color: #1A1613;
+            background:
+                radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.95), transparent 16%),
+                linear-gradient(135deg, #FFC107 0%, #FFB300 58%, #00C853 100%);
+            box-shadow:
+                0 0 26px rgba(255, 193, 7, 0.55),
+                0 18px 42px rgba(255, 145, 0, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+        }
+
+        .brand-title {
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 19px;
+            letter-spacing: -0.04em;
+        }
+
+        .brand-subtitle {
+            color: #FFE8A3;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .nav-item {
+            width: 100%;
+            border: 0;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: #E8DCCB;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.22s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            background: rgba(255, 179, 0, 0.12);
+        }
+
+        .nav-item.active {
+            color: #1A1613;
+            background: linear-gradient(135deg, #FFC107 0%, #FFB300 65%, #FFE082 100%);
+            box-shadow:
+                0 16px 42px rgba(255, 179, 0, 0.36),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+        }
+
+        .side-card {
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 193, 7, 0.18);
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 14px;
+        }
+
+        .side-label {
+            color: #FFD166;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .side-value {
+            color: #F5EAD7;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .side-footer {
+            margin-top: auto;
+            color: #F5EAD7;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 10px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 34px);
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, var(--heading) 0%, #7A4B00 48%, #FFB300 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .topbar p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hamburger {
+            display: none;
+            border: 0;
+            background: var(--surface);
+            color: var(--heading);
+            border-radius: 14px;
+            padding: 10px 12px;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn,
+        .logout-btn,
+        .profile-link-btn,
+        .primary-btn {
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--heading);
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            transition: 0.2s ease;
+        }
+
+        .logout-btn,
+        .profile-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 179, 0, 0.12);
+            color: var(--heading);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 13px;
+            box-shadow: var(--shadow);
+            transition: 0.2s ease;
+        }
+
+        .logout-btn:hover,
+        .profile-link-btn:hover,
+        .theme-toggle-btn:hover {
+            border-color: var(--solar-gold);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 0.8fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .hero-card,
+        .panel,
+        .quick-card {
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card,
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .hero-card {
+            padding: 28px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 179, 0, 0.15), transparent 35%),
+                radial-gradient(circle at bottom left, rgba(0, 200, 83, 0.08), transparent 32%),
+                var(--surface);
+        }
+
+        .hero-kicker {
+            color: #B07600;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 12px;
+        }
+
+        .hero-card h2 {
+            font-size: clamp(28px, 5vw, 44px);
+            max-width: 780px;
+            line-height: 1.03;
+            margin: 10px 0;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, var(--heading) 0%, #7A4B00 48%, #FFB300 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-card p,
+        .panel p {
+            color: var(--muted);
+        }
+
+        .quick-card {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at top right, rgba(255, 193, 7, 0.28), transparent 38%),
+                radial-gradient(circle at bottom left, rgba(0, 200, 83, 0.14), transparent 30%),
+                linear-gradient(135deg, #1A1613 0%, #2F251A 50%, #8A5A00 100%);
+            border: 1px solid rgba(255, 193, 7, 0.34);
+        }
+
+        .quick-label {
+            color: #FFE8A3;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .quick-value {
+            font-size: clamp(22px, 3vw, 34px);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            margin: 12px 0;
+            color: #ffffff;
+            word-break: break-word;
+        }
+
+        .quick-help {
+            color: #FFF3D1;
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .panel {
+            padding: 20px;
+            min-width: 0;
+            margin-top: 18px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -0.02em;
+            color: var(--heading);
+        }
+
+        .profile-form-grid,
+        .profile-readonly-card {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .profile-readonly-card {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .profile-field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .profile-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .profile-field label {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .profile-field input {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: var(--surface-solid);
+            color: var(--text);
+            border-radius: 13px;
+            padding: 12px 13px;
+            font: inherit;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .profile-field input:focus {
+            border-color: var(--solar-gold);
+            box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.18);
+        }
+
+        .profile-field input[readonly] {
+            opacity: 0.75;
+            cursor: not-allowed;
+            background: var(--surface-2);
+        }
+
+        .profile-mini-card,
+        .profile-check {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .profile-mini-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .profile-mini-card b {
+            display: block;
+            color: var(--heading);
+            margin-top: 6px;
+            word-break: break-word;
+        }
+
+        .profile-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        .profile-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--solar-gold);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .primary-btn {
+            border: 0;
+            background: linear-gradient(135deg, #FFC107 0%, #FFB300 65%, #FF9100 100%);
+            color: #1A1613;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 900;
+            box-shadow:
+                0 16px 38px rgba(255, 179, 0, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.70);
+            transition: 0.2s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .profile-message {
+            padding: 13px 14px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            font-weight: 800;
+            border: 1px solid transparent;
+        }
+
+        .profile-message.success {
+            background: rgba(0, 200, 83, 0.12);
+            color: var(--emerald);
+            border-color: rgba(0, 200, 83, 0.30);
+        }
+
+        .profile-message.error {
+            background: rgba(255, 61, 0, 0.12);
+            color: var(--alert-orange);
+            border-color: rgba(255, 61, 0, 0.30);
+        }
+
+        .profile-note {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 1100px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -310px;
+                transition: 0.25s ease;
+                width: 290px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .profile-form-grid,
+            .profile-readonly-card {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-actions {
+                justify-content: stretch;
+            }
+
+            .profile-actions .primary-btn,
+            .profile-actions .profile-link-btn {
+                width: 100%;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+        /* =====================================================
+   CUSTOM SOLAR CURSOR - GLOBAL
+   ===================================================== */
+
+.solar-cursor-dot,
+.solar-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 999999;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+}
+
+.solar-cursor-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--solar-gold, #FFB300);
+    box-shadow:
+        0 0 12px rgba(255, 193, 7, 0.95),
+        0 0 28px rgba(255, 145, 0, 0.50);
+}
+
+.solar-cursor-ring {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 179, 0, 0.55);
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.22);
+}
+
+body.solar-cursor-enabled,
+body.solar-cursor-enabled button,
+body.solar-cursor-enabled input,
+body.solar-cursor-enabled select,
+body.solar-cursor-enabled textarea,
+body.solar-cursor-enabled a,
+body.solar-cursor-enabled .nav-item,
+body.solar-cursor-enabled .primary-btn,
+body.solar-cursor-enabled .ghost-btn,
+body.solar-cursor-enabled .logout-btn,
+body.solar-cursor-enabled .profile-link-btn,
+body.solar-cursor-enabled .filter-btn {
+    cursor: none;
+}
+
+body.solar-cursor-visible .solar-cursor-dot,
+body.solar-cursor-visible .solar-cursor-ring {
+    opacity: 1;
+}
+
+body.solar-cursor-hover .solar-cursor-dot {
+    opacity: 0.28;
+}
+
+body.solar-cursor-hover .solar-cursor-ring {
+    border-color: var(--solar-gold, #FFB300);
+    background: rgba(255, 179, 0, 0.08);
+    box-shadow:
+        0 0 14px rgba(255, 179, 0, 0.36),
+        0 0 34px rgba(255, 193, 7, 0.18);
+}
+
+body.solar-cursor-active .solar-cursor-ring {
+    border-color: var(--alert-orange, #FF3D00);
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    body.solar-cursor-enabled,
+    body.solar-cursor-enabled * {
+        cursor: auto !important;
+    }
+
+    .solar-cursor-dot,
+    .solar-cursor-ring {
+        display: none !important;
+    }
+}
+
+    </style>
+</head>
+
+<body class="theme-light">
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon">⚡</div>
+            <div>
+                <div class="brand-title">Energy Lens</div>
+                <div class="brand-subtitle">Profile Settings</div>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a class="nav-item" href="{{ url_for('index') }}">
+                <span>🏠 Dashboard</span>
+            </a>
+
+            <a class="nav-item active" href="{{ url_for('profile') }}">
+                <span>👤 Profile</span>
+            </a>
+
+            <a class="nav-item" href="{{ url_for('logout') }}">
+                <span>🚪 Logout</span>
+            </a>
+        </nav>
+
+        <div class="side-card">
+            <div class="side-label">Logged in as</div>
+            <div class="side-value">{{ current_user.email }}</div>
+        </div>
+
+        <div class="side-card">
+            <div class="side-label">Household</div>
+            <div class="side-value">{{ household.household_name or 'My Home' }}</div>
+        </div>
+
+        <div class="side-footer">
+            Profile details improve bill prediction, cycle tracking, alerts and notifications.
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Profile Settings</h1>
+                <p>Manage account, household, EB billing and notification preferences.</p>
+            </div>
+
+            <div class="top-actions">
+                <button class="hamburger" id="hamburger" type="button">☰</button>
+
+                <button class="theme-toggle-btn" id="themeToggle" type="button">
+                    <span id="themeToggleIcon">🌙</span>
+                </button>
+
+                <a class="logout-btn" href="{{ url_for('index') }}">Dashboard</a>
+                <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+
+        {% if message %}
+            <div class="profile-message success">{{ message }}</div>
+        {% endif %}
+
+        {% if error %}
+            <div class="profile-message error">{{ error }}</div>
+        {% endif %}
+
+        <div class="hero-grid">
+            <section class="hero-card">
+                <div class="hero-kicker">Account Profile</div>
+                <h2>Keep your electricity profile accurate.</h2>
+                <p>
+                    These details help the dashboard calculate billing cycle usage,
+                    predicted bill, alerts and household-specific insights more accurately.
+                </p>
+            </section>
+
+            <section class="quick-card">
+                <div class="quick-label">Current Account</div>
+                <div class="quick-value">
+                    {{ current_user.full_name or 'User' }}
+                </div>
+                <div class="quick-help">{{ current_user.email }}</div>
+            </section>
+        </div>
+
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Account Summary</h3>
+                    <p>Read-only overview of your login identity.</p>
+                </div>
+            </div>
+
+            <div class="profile-readonly-card">
+                <div class="profile-mini-card">
+                    <span>Email</span>
+                    <b>{{ current_user.email or '--' }}</b>
+                </div>
+
+                <div class="profile-mini-card">
+                    <span>Created</span>
+                    <b>{{ current_user.created_at or '--' }}</b>
+                </div>
+
+                <div class="profile-mini-card">
+                    <span>Last Login</span>
+                    <b>{{ current_user.last_login_at or '--' }}</b>
+                </div>
+            </div>
+        </section>
+
+        <form method="POST" action="{{ url_for('profile') }}">
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>User Details</h3>
+                        <p>Update your display name and phone number.</p>
+                    </div>
+                </div>
+
+                <div class="profile-form-grid">
+                    <div class="profile-field">
+                        <label for="full_name">Full Name</label>
+                        <input id="full_name" name="full_name" type="text" value="{{ current_user.full_name or '' }}" required>
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" value="{{ current_user.email or '' }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="phone">Phone</label>
+                        <input id="phone" name="phone" type="text" value="{{ current_user.phone or '' }}" placeholder="Enter phone number">
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Household / EB Details</h3>
+                        <p>Used for cycle tracking, location context and predicted bill display.</p>
+                    </div>
+                </div>
+
+                <div class="profile-form-grid">
+                    <div class="profile-field">
+                        <label for="household_name">Household Name</label>
+                        <input id="household_name" name="household_name" type="text" value="{{ household.household_name or 'My Home' }}">
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="eb_service_number">EB Service Number</label>
+                        <input id="eb_service_number" name="eb_service_number" type="text" value="{{ household.eb_service_number or '' }}">
+                    </div>
+
+                    <div class="profile-field full">
+                        <label for="address">Address</label>
+                        <input id="address" name="address" type="text" value="{{ household.address or '' }}">
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="city">City</label>
+                        <input id="city" name="city" type="text" value="{{ household.city or '' }}">
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="district">District</label>
+                        <input id="district" name="district" type="text" value="{{ household.district or '' }}">
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="state">State</label>
+                        <input id="state" name="state" type="text" value="{{ household.state or 'Tamil Nadu' }}">
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="billing_cycle_start_date">Billing Cycle Start Date</label>
+                        <input
+                            id="billing_cycle_start_date"
+                            name="billing_cycle_start_date"
+                            type="date"
+                            value="{{ household.billing_cycle_start_date.isoformat() if household.billing_cycle_start_date else '' }}"
+                        >
+                    </div>
+                </div>
+
+                <p class="profile-note">
+                    Tip: If TNEB bills your house every 2 months, set the cycle start date
+                    as the first day of the current EB billing cycle.
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Notification Preferences</h3>
+                        <p>Control which alerts can send browser push notifications.</p>
+                    </div>
+                </div>
+
+                <div class="profile-form-grid">
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefPushEnabled">
+                        Push notifications enabled
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefLimitAlerts">
+                        Limit and consumption target alerts
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefAbnormalAlerts">
+                        Abnormal consumption alerts
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefBillAlerts">
+                        High bill prediction alerts
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefMaxOneDaily">
+                        Send maximum one push per alert type per day
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefWhatsapp">
+                            WhatsApp alerts
+                    </label>
+
+                    <label class="profile-check">
+                        <input type="checkbox" id="prefSms">
+                            SMS alerts
+                    </label>
+                </div>
+
+                <p class="profile-note">
+                    In-app alerts will still be saved. These settings control browser push notifications.
+                </p>
+
+                <div class="profile-actions">
+                    <button class="primary-btn" type="button" id="saveNotificationPrefsBtn">
+                        Save Notification Preferences
+                    </button>
+                </div>
+
+                <div id="notificationPrefsMessage" class="profile-note"></div>
+            </section>
+
+            <div class="profile-actions">
+                <a class="profile-link-btn" href="{{ url_for('index') }}">Cancel</a>
+                <button class="primary-btn" type="submit">Save Profile</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+(function () {
+    const body = document.body;
+    const savedTheme = localStorage.getItem("tneb-theme") || "light";
+    const icon = document.getElementById("themeToggleIcon");
+    const themeToggle = document.getElementById("themeToggle");
+    const hamburger = document.getElementById("hamburger");
+    const sidebar = document.getElementById("sidebar");
+
+    function applyTheme(theme) {
+        body.classList.remove("theme-light", "theme-dark");
+        body.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
+        localStorage.setItem("tneb-theme", theme);
+
+        if (icon) {
+            icon.textContent = theme === "dark" ? "☀️" : "🌙";
+        }
+    }
+
+    applyTheme(savedTheme);
+
+    if (themeToggle) {
+        themeToggle.addEventListener("click", function () {
+            applyTheme(body.classList.contains("theme-dark") ? "light" : "dark");
+        });
+    }
+
+    if (hamburger && sidebar) {
+        hamburger.addEventListener("click", function () {
+            sidebar.classList.toggle("open");
+        });
+    }
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+    function setPrefsMessage(text, ok) {
+        const box = $("notificationPrefsMessage");
+        if (!box) return;
+
+        box.textContent = text;
+        box.style.color = ok ? "var(--emerald)" : "var(--alert-orange)";
+        box.style.fontWeight = "800";
+    }
+
+    async function loadNotificationPreferences() {
+        const response = await fetch("/api/notification-preferences");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data = await response.json();
+
+        if ($("prefPushEnabled")) $("prefPushEnabled").checked = !!data.pushEnabled;
+        if ($("prefLimitAlerts")) $("prefLimitAlerts").checked = !!data.limitAlertsEnabled;
+        if ($("prefAbnormalAlerts")) $("prefAbnormalAlerts").checked = !!data.abnormalAlertsEnabled;
+        if ($("prefBillAlerts")) $("prefBillAlerts").checked = !!data.billAlertsEnabled;
+        if ($("prefMaxOneDaily")) $("prefMaxOneDaily").checked = !!data.maxOnePushPerDay;
+        if ($("prefWhatsapp")) $("prefWhatsapp").checked = !!data.whatsappEnabled;
+        if ($("prefSms")) $("prefSms").checked = !!data.smsEnabled;
+    }
+
+    async function saveNotificationPreferences() {
+        try {
+            const payload = {
+                pushEnabled: $("prefPushEnabled").checked,
+                limitAlertsEnabled: $("prefLimitAlerts").checked,
+                abnormalAlertsEnabled: $("prefAbnormalAlerts").checked,
+                billAlertsEnabled: $("prefBillAlerts").checked,
+                maxOnePushPerDay: $("prefMaxOneDaily").checked,
+                whatsappEnabled: $("prefWhatsapp").checked,
+                smsEnabled: $("prefSms").checked,
+                emailEnabled: false
+            };
+
+            const response = await fetch("/api/notification-preferences", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || "Could not save preferences.");
+            }
+
+            setPrefsMessage(data.message || "Preferences saved.", true);
+
+        } catch (error) {
+            console.error(error);
+            setPrefsMessage(error.message, false);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadNotificationPreferences().catch(console.error);
+
+        if ($("saveNotificationPrefsBtn")) {
+            $("saveNotificationPrefsBtn").addEventListener("click", function () {
+                saveNotificationPreferences().catch(console.error);
+            });
+        }
+    });
+})();
+</script>
+<script src="{{ url_for('static', filename='js/solar_cursor.js') }}"></script>
+<style>
+    /* FORCE SOLAR CURSOR */
+    .solar-cursor-dot,
+    .solar-cursor-ring {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 999999999;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .solar-cursor-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--solar-gold, #FFB300);
+        box-shadow:
+            0 0 12px rgba(255, 193, 7, 0.95),
+            0 0 28px rgba(255, 145, 0, 0.50);
+    }
+
+    .solar-cursor-ring {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(255, 179, 0, 0.65);
+        box-shadow: 0 0 20px rgba(255, 179, 0, 0.25);
+    }
+
+    body.solar-cursor-enabled,
+    body.solar-cursor-enabled * {
+        cursor: none !important;
+    }
+
+    body.solar-cursor-visible .solar-cursor-dot,
+    body.solar-cursor-visible .solar-cursor-ring {
+        opacity: 1;
+    }
+
+    body.solar-cursor-hover .solar-cursor-dot {
+        opacity: 0.25;
+    }
+
+    body.solar-cursor-hover .solar-cursor-ring {
+        border-color: var(--solar-gold, #FFB300);
+        background: rgba(255, 179, 0, 0.08);
+        box-shadow:
+            0 0 14px rgba(255, 179, 0, 0.36),
+            0 0 34px rgba(255, 193, 7, 0.18);
+    }
+
+    body.solar-cursor-active .solar-cursor-ring {
+        border-color: var(--alert-orange, #FF3D00);
+    }
+
+    @media (pointer: coarse) {
+        body.solar-cursor-enabled,
+        body.solar-cursor-enabled * {
+            cursor: auto !important;
+        }
+
+        .solar-cursor-dot,
+        .solar-cursor-ring {
+            display: none !important;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    function setupForcedSolarCursor() {
+        if (window.matchMedia("(pointer: coarse)").matches) {
+            return;
+        }
+
+        document.querySelectorAll(".solar-cursor-dot, .solar-cursor-ring").forEach(function (el) {
+            el.remove();
+        });
+
+        const dot = document.createElement("div");
+        const ring = document.createElement("div");
+
+        dot.className = "solar-cursor-dot";
+        ring.className = "solar-cursor-ring";
+
+        document.body.appendChild(ring);
+        document.body.appendChild(dot);
+
+        document.body.classList.add("solar-cursor-enabled");
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX;
+        let ringY = mouseY;
+        let ringScale = 1;
+        let targetScale = 1;
+
+        const interactiveSelector = [
+            "a",
+            "button",
+            "input",
+            "select",
+            "textarea",
+            "[role='button']",
+            ".nav-item",
+            ".primary-btn",
+            ".ghost-btn",
+            ".logout-btn",
+            ".profile-link-btn",
+            ".filter-btn",
+            ".panel",
+            ".hero-card",
+            ".quick-card",
+            ".theme-toggle-btn"
+        ].join(",");
+
+        function moveDot(x, y) {
+            dot.style.transform =
+                "translate3d(" + x + "px, " + y + "px, 0) translate(-50%, -50%)";
+        }
+
+        function moveRing(x, y, scale) {
+            ring.style.transform =
+                "translate3d(" + x + "px, " + y + "px, 0) translate(-50%, -50%) scale(" + scale + ")";
+        }
+
+        window.addEventListener("mousemove", function (event) {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+
+            document.body.classList.add("solar-cursor-visible");
+
+            moveDot(mouseX, mouseY);
+        });
+
+        window.addEventListener("mouseenter", function () {
+            document.body.classList.add("solar-cursor-visible");
+        });
+
+        window.addEventListener("mouseleave", function () {
+            document.body.classList.remove("solar-cursor-visible");
+        });
+
+        document.addEventListener("mouseover", function (event) {
+            if (event.target.closest(interactiveSelector)) {
+                document.body.classList.add("solar-cursor-hover");
+                targetScale = 1.5;
+            }
+        });
+
+        document.addEventListener("mouseout", function (event) {
+            if (event.target.closest(interactiveSelector)) {
+                document.body.classList.remove("solar-cursor-hover");
+                targetScale = 1;
+            }
+        });
+
+        window.addEventListener("mousedown", function () {
+            document.body.classList.add("solar-cursor-active");
+            targetScale = 0.65;
+        });
+
+        window.addEventListener("mouseup", function () {
+            document.body.classList.remove("solar-cursor-active");
+
+            if (document.body.classList.contains("solar-cursor-hover")) {
+                targetScale = 1.5;
+            } else {
+                targetScale = 1;
+            }
+        });
+
+        function animate() {
+            ringX += (mouseX - ringX) * 0.22;
+            ringY += (mouseY - ringY) * 0.22;
+            ringScale += (targetScale - ringScale) * 0.22;
+
+            moveRing(ringX, ringY, ringScale);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupForcedSolarCursor);
+    } else {
+        setupForcedSolarCursor();
+    }
+})();
+</script>
+</body>
+</html>
